@@ -12,8 +12,16 @@ class HomePostsCell: UICollectionViewCell {
     
     var post: Post? {
         didSet {
+    
+            guard let userProfileImageURL = post?.user.profileImageURL else { return }
+            userProfileImageView.loadImage(urlString: userProfileImageURL)
+            
+            userNameLabel.text = post?.user.username
+            
             guard let imageURL = post?.imageURL else { return }
             photoImageView.loadImage(urlString: imageURL)
+            
+            setupAttributedCaption()
         }
     }
     
@@ -73,13 +81,6 @@ class HomePostsCell: UICollectionViewCell {
     
     let captionLabel: UILabel = {
         let label = UILabel()
-        let attributeText = NSMutableAttributedString(string: "Username", attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 14)])
-        
-        attributeText.append(NSAttributedString(string: " Today im really tired, but i don't care, because everyday is the same.", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14)]))
-        attributeText.append(NSAttributedString(string: "\n\n", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 4)]))
-        attributeText.append(NSAttributedString(string: "1 week ago", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14), NSAttributedString.Key.foregroundColor: UIColor.gray]))
-        
-        label.attributedText = attributeText
         label.numberOfLines = 0
         return label
     }()
@@ -106,6 +107,22 @@ class HomePostsCell: UICollectionViewCell {
         
         captionLabel.anchor(top: likeButton.bottomAnchor, bottom: bottomAnchor, left: leftAnchor, right: rightAnchor, paddingTop: 0, paddingBottom: 0, paddingLeft: 8, paddingRight: 8, width: 0, height: 0)
         
+        
+    }
+    
+    fileprivate func setupAttributedCaption() {
+        
+        guard let username = post?.user.username else { return }
+        guard let caption = post?.caption else { return }
+        
+        let attributeText = NSMutableAttributedString(string: username, attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 14)])
+        
+        attributeText.append(NSAttributedString(string: " \(caption)", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14)]))
+        attributeText.append(NSAttributedString(string: "\n\n", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 4)]))
+        
+        attributeText.append(NSAttributedString(string: "1 week ago", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14), NSAttributedString.Key.foregroundColor: UIColor.gray]))
+        
+        captionLabel.attributedText = attributeText
         
     }
     

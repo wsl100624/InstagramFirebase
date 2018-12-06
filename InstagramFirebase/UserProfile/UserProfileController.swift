@@ -9,16 +9,6 @@
 import UIKit
 import Firebase
 
-struct User {
-    let username: String
-    let profileImageURL: String
-    
-    init(dictionary: [String: Any]) {
-        self.username = dictionary["username"] as? String ?? ""
-        self.profileImageURL = dictionary["profile_image"] as? String ?? ""
-    }
-}
-
 class UserProfileController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
     var user: User?
@@ -38,7 +28,6 @@ class UserProfileController: UICollectionViewController, UICollectionViewDelegat
         
         setupLogOutButton()
         
-//        fetchPost()
         fetchOrderedPosts()
     }
     
@@ -51,9 +40,10 @@ class UserProfileController: UICollectionViewController, UICollectionViewDelegat
         postsRef.queryOrdered(byChild: "creationDate").observe(.childAdded, with: { (snapshot) in
             
             guard let dictionary = snapshot.value else { return }
-            let post = Post(dictionary: dictionary as! [String : Any])
+            guard let user = self.user else { return }
+            let post = Post(user: user, dictionary: dictionary as! [String : Any])
             
-            self.posts.append(post)
+            self.posts.insert(post, at: 0)
             
             self.collectionView.reloadData()
             
@@ -63,29 +53,6 @@ class UserProfileController: UICollectionViewController, UICollectionViewDelegat
         
     }
     
-    fileprivate func fetchPost() {
-        
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        
-        let postsRef = Database.database().reference().child("posts").child(uid)
-        
-        postsRef.observeSingleEvent(of: .value, with: { (snapshot) in
-            guard let dictionaries = snapshot.value as? [String : Any] else { return }
-            
-            dictionaries.forEach({ (key, value) in
-                guard let dictionary = value as? [String : Any] else { return }
-                let post = Post(dictionary: dictionary)
-                self.posts.append(post)
-            })
-            
-            self.collectionView?.reloadData()
-    
-        }) { (error) in
-            print("Failed to fetch posts", error)
-        }
-        
-        
-    }
     
     fileprivate func setupLogOutButton() {
         
