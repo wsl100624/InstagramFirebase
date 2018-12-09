@@ -29,6 +29,7 @@
 		ACE1234D21B5169C006734BF /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE1234C21B5169C006734BF /* Post.swift */; };
 		ACE1234F21B521BE006734BF /* CustomImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE1234E21B521BE006734BF /* CustomImageView.swift */; };
 		ACF9F99021B89A730029C3F8 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF9F98F21B89A730029C3F8 /* User.swift */; };
+		ACF9F99221BCEA2C0029C3F8 /* FirebaseExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF9F99121BCEA2C0029C3F8 /* FirebaseExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +59,7 @@
 		ACE1234C21B5169C006734BF /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		ACE1234E21B521BE006734BF /* CustomImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomImageView.swift; sourceTree = "<group>"; };
 		ACF9F98F21B89A730029C3F8 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		ACF9F99121BCEA2C0029C3F8 /* FirebaseExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +134,7 @@
 			children = (
 				AC4FAA5C21A7A4CB004D1207 /* Extension.swift */,
 				ACE1234E21B521BE006734BF /* CustomImageView.swift */,
+				ACF9F99121BCEA2C0029C3F8 /* FirebaseExtension.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -327,6 +330,7 @@
 				AC3040A021B0F6DE00ECA044 /* PhotoSelectorHeaderCell.swift in Sources */,
 				AC4FAA7521AB6794004D1207 /* LoginController.swift in Sources */,
 				AC4FAA7821AD1C07004D1207 /* PhotoSelectorController.swift in Sources */,
+				ACF9F99221BCEA2C0029C3F8 /* FirebaseExtension.swift in Sources */,
 				AC0650FA21B723A800EAB1BE /* HomeController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

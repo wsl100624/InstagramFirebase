@@ -17,14 +17,12 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        collectionView.backgroundColor = .white
-        
-        collectionView.register(HomePostsCell.self, forCellWithReuseIdentifier: cellId)
-        
         setupNavigationItems()
         
+        collectionView.backgroundColor = .white
+        collectionView.register(HomePostsCell.self, forCellWithReuseIdentifier: cellId)
+
         fetchPosts()
-        
     }
     
     
@@ -33,37 +31,33 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
         navigationItem.titleView = UIImageView(image: #imageLiteral(resourceName: "logo2"))
     }
     
+    fileprivate func fetchPostWithUser(_ user: User) {
+        
+        let postsRef = Database.database().reference().child("posts").child(user.uid)
+        
+        postsRef.observeSingleEvent(of: .value, with: { (snapshot) in
+            
+            guard let dictionaries = snapshot.value as? [String : Any] else { return }
+            dictionaries.forEach({ (key, value) in
+                guard let dictionary = value as? [String : Any] else { return }
+                let post = Post(user: user, dictionary: dictionary)
+                
+                self.posts.append(post)
+            })
+            
+            self.collectionView?.reloadData()
+        }) { (error) in
+            print("Failed to fetch posts", error)
+        }
+    }
+    
     fileprivate func fetchPosts() {
         
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
-        let userRef = Database.database().reference().child("users").child(uid)
-        
-        userRef.observeSingleEvent(of: .value, with: { (snapshot) in
-            let userDictionary = snapshot.value as! [String : Any]
-            let fetchedUser = User(dictionary: userDictionary)
-            
-            let postsRef = Database.database().reference().child("posts").child(uid)
-            
-            postsRef.observeSingleEvent(of: .value, with: { (snapshot) in
-                
-                guard let dictionaries = snapshot.value as? [String : Any] else { return }
-                dictionaries.forEach({ (key, value) in
-                    guard let dictionary = value as? [String : Any] else { return }
-                    let post = Post(user: fetchedUser, dictionary: dictionary)
-                    
-                    self.posts.append(post)
-                })
-            
-                self.collectionView?.reloadData()
-            }) { (error) in
-                print("Failed to fetch posts", error)
-            }
-        }) { (error) in
-            print(error)
+        Database.fetchUserWithUID(uid: uid) { (user) in
+            self.fetchPostWithUser(user)
         }
-        
-        
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
