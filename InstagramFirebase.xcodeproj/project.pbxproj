@@ -30,6 +30,8 @@
 		ACE1234F21B521BE006734BF /* CustomImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE1234E21B521BE006734BF /* CustomImageView.swift */; };
 		ACF9F99021B89A730029C3F8 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF9F98F21B89A730029C3F8 /* User.swift */; };
 		ACF9F99221BCEA2C0029C3F8 /* FirebaseExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF9F99121BCEA2C0029C3F8 /* FirebaseExtension.swift */; };
+		ACF9F99421BE2B620029C3F8 /* UserSearchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF9F99321BE2B620029C3F8 /* UserSearchController.swift */; };
+		ACF9F99821BE30830029C3F8 /* UserSearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF9F99721BE30830029C3F8 /* UserSearchCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,6 +62,8 @@
 		ACE1234E21B521BE006734BF /* CustomImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomImageView.swift; sourceTree = "<group>"; };
 		ACF9F98F21B89A730029C3F8 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		ACF9F99121BCEA2C0029C3F8 /* FirebaseExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseExtension.swift; sourceTree = "<group>"; };
+		ACF9F99321BE2B620029C3F8 /* UserSearchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSearchController.swift; sourceTree = "<group>"; };
+		ACF9F99721BE30830029C3F8 /* UserSearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSearchCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,12 +116,6 @@
 		AC4FAA4921A7A49F004D1207 /* InstagramFirebase */ = {
 			isa = PBXGroup;
 			children = (
-				ACE1234B21B51690006734BF /* Model */,
-				AC0650F821B7238300EAB1BE /* Home */,
-				AC4FAA7621AD1BEA004D1207 /* AddPhoto */,
-				AC4FAA6D21AB65CD004D1207 /* Login */,
-				AC4FAA6A21A8A957004D1207 /* UserProfile */,
-				AC4FAA5E21A7A4CE004D1207 /* Utils */,
 				AC4FAA4A21A7A49F004D1207 /* AppDelegate.swift */,
 				AC4FAA6221A89BD9004D1207 /* MainTabBarViewController.swift */,
 				AC4FAA4E21A7A49F004D1207 /* Main.storyboard */,
@@ -125,6 +123,13 @@
 				AC4FAA6021A7CECE004D1207 /* GoogleService-Info.plist */,
 				AC4FAA5321A7A4A1004D1207 /* LaunchScreen.storyboard */,
 				AC4FAA5121A7A4A1004D1207 /* Assets.xcassets */,
+				ACE1234B21B51690006734BF /* Model */,
+				AC0650F821B7238300EAB1BE /* Home */,
+				AC4FAA7621AD1BEA004D1207 /* AddPhoto */,
+				AC4FAA6D21AB65CD004D1207 /* Login */,
+				AC4FAA6A21A8A957004D1207 /* UserProfile */,
+				AC4FAA5E21A7A4CE004D1207 /* Utils */,
+				ACF9F99621BE2BA40029C3F8 /* Search */,
 			);
 			path = InstagramFirebase;
 			sourceTree = "<group>";
@@ -176,6 +181,15 @@
 				ACF9F98F21B89A730029C3F8 /* User.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		ACF9F99621BE2BA40029C3F8 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				ACF9F99321BE2B620029C3F8 /* UserSearchController.swift */,
+				ACF9F99721BE30830029C3F8 /* UserSearchCell.swift */,
+			);
+			path = Search;
 			sourceTree = "<group>";
 		};
 		D05116953E52535A22F1D927 /* Pods */ = {
@@ -314,12 +328,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACF9F99821BE30830029C3F8 /* UserSearchCell.swift in Sources */,
 				AC0650FC21B7240D00EAB1BE /* HomePostsCell.swift in Sources */,
 				AC3040A621B1AB9B00ECA044 /* SharePhotoController.swift in Sources */,
 				AC4FAA5D21A7A4CB004D1207 /* Extension.swift in Sources */,
 				AC30409E21AF58A900ECA044 /* PhotoSelectorCell.swift in Sources */,
 				ACE1234F21B521BE006734BF /* CustomImageView.swift in Sources */,
 				ACE1234A21B50B00006734BF /* UserPhotoCell.swift in Sources */,
+				ACF9F99421BE2B620029C3F8 /* UserSearchController.swift in Sources */,
 				ACE1234D21B5169C006734BF /* Post.swift in Sources */,
 				ACF9F99021B89A730029C3F8 /* User.swift in Sources */,
 				AC4FAA6321A89BD9004D1207 /* MainTabBarViewController.swift in Sources */,
