@@ -19,6 +19,8 @@ class CustomImageView: UIImageView {
         
         lastURLUsedToDownloadImage = urlString
         
+        self.image = nil
+        
         if let catchedImage = imageCatch[urlString] {
             self.image = catchedImage
             return

@@ -1,27 +1,25 @@
 //
-//  Post.swift
+//  Comment.swift
 //  InstagramFirebase
 //
-//  Created by Will Wang on 12/3/18.
+//  Created by Will Wang on 12/31/18.
 //  Copyright © 2018 Will Wang. All rights reserved.
 //
 
 import Foundation
 
-struct Post {
-
-    var id: String?
+struct Comment {
     
-    let imageURL: String
-    let user: User
-    let caption: String
+    let text: String
     let creationDate: Date
+    let uid: String
     
+    let user: User
     
-    init(user: User, dictionary: [String: Any]) {
-        self.imageURL = dictionary["imageURL"] as? String ?? ""
+    init(dictionary: [String: Any], user: User) {
+        self.text = dictionary["text"] as? String ?? ""
+        self.uid = dictionary["uid"] as? String ?? ""
         self.user = user
-        self.caption = dictionary["caption"] as? String ?? ""
         
         let secondsSince1970 = dictionary["creationDate"] as? Double ?? 0
         

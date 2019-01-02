@@ -102,7 +102,7 @@ class PhotoSelectorController: UICollectionViewController, UICollectionViewDeleg
                     let selectedAsset = self.assets[index]
                     
                     let imageManager = PHImageManager.default()
-                    let targetSize = CGSize(width: 600, height: 600)
+                    let targetSize = CGSize(width: 800, height: 800)
                     let options = PHImageRequestOptions()
                     options.isSynchronous = true
                     options.isNetworkAccessAllowed = true

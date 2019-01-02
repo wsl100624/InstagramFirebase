@@ -9,7 +9,8 @@
 import UIKit
 import Firebase
 
-class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLayout{
+class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLayout, HomePostCellDelegate{
+    
     
     let cellId = "cellId"
     var posts = [Post]()
@@ -19,16 +20,42 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
         
         setupNavigationItems()
         
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
+        collectionView.refreshControl = refreshControl
+        
         collectionView.backgroundColor = .white
         collectionView.register(HomePostsCell.self, forCellWithReuseIdentifier: cellId)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(handleUpdateFeed), name: SharePhotoController.updateFeedNotificationName, object: nil)
 
-        fetchPosts()
+        fetchAllPosts()
     }
     
+    @objc func handleUpdateFeed() {
+        handleRefresh()
+    }
+    
+    @objc func handleRefresh() {
+        posts.removeAll()
+        fetchAllPosts()
+    }
+    
+    fileprivate func fetchAllPosts() {
+        fetchPosts()
+        fetchFollowingUsersPost()
+    }
     
     fileprivate func setupNavigationItems() {
-        
         navigationItem.titleView = UIImageView(image: #imageLiteral(resourceName: "logo2"))
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "camera3").withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(handleOpenCamera))
+    }
+    
+    @objc fileprivate func handleOpenCamera() {
+        let cameraController = CameraController()
+        present(cameraController, animated: true, completion: nil)
+        
     }
     
     fileprivate func fetchPostWithUser(_ user: User) {
@@ -36,13 +63,18 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
         let postsRef = Database.database().reference().child("posts").child(user.uid)
         
         postsRef.observeSingleEvent(of: .value, with: { (snapshot) in
+            self.collectionView.refreshControl?.endRefreshing()
             
             guard let dictionaries = snapshot.value as? [String : Any] else { return }
             dictionaries.forEach({ (key, value) in
                 guard let dictionary = value as? [String : Any] else { return }
-                let post = Post(user: user, dictionary: dictionary)
-                
+                var post = Post(user: user, dictionary: dictionary)
+                post.id = key
                 self.posts.append(post)
+                
+                self.posts.sort(by: { (p1, p2) -> Bool in
+                    p1.creationDate.compare(p2.creationDate) == .orderedDescending
+                })
             })
             
             self.collectionView?.reloadData()
@@ -58,6 +90,29 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
         Database.fetchUserWithUID(uid: uid) { (user) in
             self.fetchPostWithUser(user)
         }
+        
+    }
+    
+    fileprivate func fetchFollowingUsersPost() {
+        
+        guard let currentUserUid = Auth.auth().currentUser?.uid else { return }
+        
+        let ref = Database.database().reference().child("following").child(currentUserUid)
+        
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            
+            print("successfully fetched users posts from current following user")
+            
+            let dictionary = snapshot.value as! [String:Any]
+            dictionary.forEach({ (key, value) in
+                Database.fetchUserWithUID(uid: key) { (user) in
+                    self.fetchPostWithUser(user)
+                }
+            })
+        }) { (error) in
+            print("failed to get following users")
+        }
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -73,10 +128,24 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! HomePostsCell
-        cell.post = posts[indexPath.item]
+        if indexPath.item < posts.count {
+            cell.post = posts[indexPath.item]
+        }
+        
+        cell.delegate = self
         
         return cell
     }
+    
+    func didTapCommentButton(post: Post) {
+        
+        let commentsController = CommentsController(collectionViewLayout: UICollectionViewFlowLayout())
+        navigationController?.pushViewController(commentsController, animated: true)
+        
+        commentsController.post = post
+        
+    }
+
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return posts.count

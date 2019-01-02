@@ -11,6 +11,8 @@ import Firebase
 
 class SharePhotoController: UIViewController {
     
+    static let updateFeedNotificationName = Notification.Name("UpdateFeed")
+    
     var selectedImage: UIImage? {
         didSet {
             imageView.image = selectedImage
@@ -100,6 +102,7 @@ class SharePhotoController: UIViewController {
         
         
         let value = ["imageURL" : imageURL, "imageWidth" : postImage.size.width, "imageHeight" : postImage.size.height, "caption" : caption, "creationDate" : Date().timeIntervalSince1970] as [String : Any]
+        
         ref.updateChildValues(value) { (error, ref) in
             if let error = error {
                 self.navigationItem.rightBarButtonItem?.isEnabled = true
@@ -107,8 +110,12 @@ class SharePhotoController: UIViewController {
                 print("Failed to update data in database", error)
                 return
             }
-            
+
             print("Successfully to update data in database")
+            
+            
+            NotificationCenter.default.post(name: SharePhotoController.updateFeedNotificationName, object: nil)
+            
             self.dismiss(animated: true, completion: nil)
         }
         

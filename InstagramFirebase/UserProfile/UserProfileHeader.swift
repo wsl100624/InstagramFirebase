@@ -14,10 +14,15 @@ class UserProfileHeader: UICollectionViewCell {
     var user: User? {
         didSet {
             guard let profileImageURL = user?.profileImageURL else { return }
+            
             profileImageView.loadImage(urlString: profileImageURL)
+            
             usernameLabel.text = user?.username
+            
+            setupEditProfileFollowButton()
         }
     }
+    
     
     let profileImageView: CustomImageView = {
         let iv = CustomImageView()
@@ -32,7 +37,7 @@ class UserProfileHeader: UICollectionViewCell {
         return label
     }()
     
-    let editProfileButton: UIButton = {
+    lazy var editFollowButton: UIButton = {
         let btn = UIButton()
         btn.setTitle("Edit Profile", for: .normal)
         btn.setTitleColor(.black, for: .normal)
@@ -40,6 +45,7 @@ class UserProfileHeader: UICollectionViewCell {
         btn.layer.borderColor = UIColor.lightGray.cgColor
         btn.layer.borderWidth = 1
         btn.layer.cornerRadius = 3
+        btn.addTarget(self, action: #selector(handleEditProfileOrFollow), for: .touchUpInside)
         
         return btn
     }()
@@ -61,7 +67,7 @@ class UserProfileHeader: UICollectionViewCell {
         let btn = UIButton(type: .system)
         btn.setImage(#imageLiteral(resourceName: "ribbon"), for: .normal)
         btn.tintColor = UIColor.lightGray
-
+        
         return btn
     }()
     
@@ -110,8 +116,71 @@ class UserProfileHeader: UICollectionViewCell {
         
         setupUserStatsView()
         
-        addSubview(editProfileButton)
-        editProfileButton.anchor(top: postLabel.bottomAnchor, bottom: nil, left: profileImageView.rightAnchor, right: rightAnchor, paddingTop: 8, paddingBottom: 0, paddingLeft: 10, paddingRight: 10, width: 0, height: 25)
+        addSubview(editFollowButton)
+        editFollowButton.anchor(top: postLabel.bottomAnchor, bottom: nil, left: profileImageView.rightAnchor, right: rightAnchor, paddingTop: 8, paddingBottom: 0, paddingLeft: 10, paddingRight: 10, width: 0, height: 25)
+    }
+    
+    fileprivate func setupEditProfileFollowButton() {
+        
+        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
+        
+        guard let userId = user?.uid else { return }
+        
+        if userId == currentUserId {
+            editFollowButton.setTitle("Edit Profile", for: .normal)
+        } else {
+            Database.database().reference().child("following").child(currentUserId).child(userId).observeSingleEvent(of: .value, with: { (snapshot) in
+                
+                if let isFollowing = snapshot.value as? Int, isFollowing == 1 {
+                    self.setupUnfollowButtonStyle()
+                } else {
+                    self.setupFollowButtonStyle()
+                }
+                
+            }) { (error) in
+                print("Failed to get following", error)
+            }
+            
+            
+            
+        }
+    }
+    
+    @objc func handleEditProfileOrFollow() {
+        
+        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
+        guard let userId = user?.uid else { return }
+        let ref = Database.database().reference().child("following").child(currentUserId)
+        
+        if editFollowButton.titleLabel?.text == "Unfollow" {
+            ref.child(userId).removeValue { (error, ref) in
+                if let error = error {
+                    print("failed to unfollow", error)
+                }
+                print("successfully to unfollow")
+                
+                self.setupFollowButtonStyle()
+            }
+        } else {
+            let value = [userId : 1]
+            ref.updateChildValues(value)
+            self.setupUnfollowButtonStyle()
+        }
+        
+        
+    }
+    
+    fileprivate func setupUnfollowButtonStyle() {
+        self.editFollowButton.setTitle("Unfollow", for: .normal)
+        self.editFollowButton.backgroundColor = .white
+        self.editFollowButton.setTitleColor(.black, for: .normal)
+    }
+    
+    fileprivate func setupFollowButtonStyle() {
+        self.editFollowButton.setTitle("Follow", for: .normal)
+        self.editFollowButton.backgroundColor = UIColor.rgb(red: 17, green: 154, blue: 237)
+        self.editFollowButton.setTitleColor(.white, for: .normal)
+        self.editFollowButton.layer.borderColor = UIColor(white: 0, alpha: 0.2).cgColor
     }
     
     fileprivate func setupBottomToolBar() {
@@ -138,7 +207,7 @@ class UserProfileHeader: UICollectionViewCell {
         stackView.anchor(top: nil, bottom: bottomAnchor, left: leftAnchor, right: rightAnchor, paddingTop: 0, paddingBottom: 0, paddingLeft: 0, paddingRight: 0, width: 0, height: 40)
         topDivider.anchor(top: nil, bottom: stackView.topAnchor, left: leftAnchor, right: rightAnchor, paddingTop: 0, paddingBottom: 0, paddingLeft: 0, paddingRight: 0, width: 0, height: 0.5)
         bottomDivider.anchor(top: stackView.bottomAnchor, bottom: nil, left: leftAnchor, right: rightAnchor, paddingTop: 0, paddingBottom: 0, paddingLeft: 0, paddingRight: 0, width: 0, height: 0.5)
-    
+        
     }
     
     fileprivate func setupUserStatsView() {
@@ -150,7 +219,7 @@ class UserProfileHeader: UICollectionViewCell {
         addSubview(stackView)
         stackView.anchor(top: profileImageView.topAnchor, bottom: nil, left: profileImageView.rightAnchor, right: rightAnchor, paddingTop: 8, paddingBottom: 0, paddingLeft: 12, paddingRight: 12, width: 0, height: 0)
     }
-
+    
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
