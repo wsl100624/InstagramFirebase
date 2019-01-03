@@ -24,9 +24,7 @@ class MainTabBarViewController: UITabBarController, UITabBarControllerDelegate {
             present(navController, animated: true, completion: nil)
             return false
         }
-        
-        
-        
+ 
         return true
     }
     
@@ -41,7 +39,6 @@ class MainTabBarViewController: UITabBarController, UITabBarControllerDelegate {
                 let navController = UINavigationController(rootViewController: loginController)
                 self.present(navController, animated: true, completion: nil)
             }
-            
             return
         }
         
@@ -66,7 +63,7 @@ class MainTabBarViewController: UITabBarController, UITabBarControllerDelegate {
         //userProfile
         let userProfileController = templateNavController(selectedImage: #imageLiteral(resourceName: "profile_selected"), unselectedImage: #imageLiteral(resourceName: "profile_unselected"), rootViewController: UserProfileController(collectionViewLayout: UICollectionViewFlowLayout()))
         
-        tabBar.tintColor = UIColor.black
+        tabBar.tintColor = .black
         
         viewControllers = [homeNavController,
                            searchController,
