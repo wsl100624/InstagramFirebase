@@ -9,7 +9,12 @@
 import UIKit
 import Firebase
 
-class CommentsController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
+class CommentsController: UICollectionViewController, UICollectionViewDelegateFlowLayout, CommentInputAccessoryDelegate {
+    
+    
+    
+    
+    
     
     let cellId = "cellId"
     var post: Post?
@@ -110,63 +115,37 @@ class CommentsController: UICollectionViewController, UICollectionViewDelegateFl
     }
     
     
-    lazy var containerView: UIView = {
-        let containerView = UIView()
-        containerView.frame = CGRect(x: 0, y: 0, width: 100, height: 80)
-        containerView.backgroundColor = .white
-        
-        let submitButton = UIButton(type: .system)
-        submitButton.setTitle("Submit", for: .normal)
-        submitButton.setTitleColor(.black, for: .normal)
-        submitButton.titleLabel?.font = .boldSystemFont(ofSize: 14)
-        submitButton.addTarget(self, action: #selector(handleSubmit), for: .touchUpInside)
-        
-        containerView.addSubview(submitButton)
-        containerView.addSubview(self.commentTextField)
-        
-        submitButton.anchor(top: containerView.topAnchor, bottom: containerView.bottomAnchor, left: nil, right: containerView.rightAnchor, paddingTop: 0, paddingBottom: 0, paddingLeft: 0, paddingRight: 12, width: 50, height: 0)
-        
-        commentTextField.anchor(top: containerView.topAnchor, bottom: containerView.bottomAnchor, left: containerView.leftAnchor, right: submitButton.leftAnchor, paddingTop: 0, paddingBottom: 0, paddingLeft: 12, paddingRight: 0, width: 0, height: 0)
-        
-        let lineSeparatorView = UIView()
-        lineSeparatorView.backgroundColor = UIColor.rgb(red: 230, green: 230, blue: 230)
-        
-        containerView.addSubview(lineSeparatorView)
-        lineSeparatorView.anchor(top: nil, bottom: containerView.topAnchor, left: containerView.leftAnchor, right: containerView.rightAnchor, paddingTop: 0, paddingBottom: 0, paddingLeft: 0, paddingRight: 0, width: 0, height: 1)
-        
-        
-        return containerView
+    lazy var containerView: CommentInputAccessoryView = {
+        let frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 80)
+        let commentInputAccessoryView = CommentInputAccessoryView(frame: frame)
+        commentInputAccessoryView.delegate = self
+        return commentInputAccessoryView
     }()
     
-    let commentTextField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Enter Comment"
-        return textField
-    }()
+    override var inputAccessoryView: UIView? {
+        get {
+            return containerView
+        }
+    }
     
-    @objc func handleSubmit() {
-
+    func didSubmit(for comment: String) {
+        print("Trying to test delegate...")
+        
         guard let post = self.post else { return }
         guard let postId = post.id else { return }
         
         guard let currentUserUID = Auth.auth().currentUser?.uid else { return }
-        guard let text = commentTextField.text, text.count > 0 else { return }
-        let value = ["text": text, "creationDate": Date().timeIntervalSince1970, "uid": currentUserUID] as [String : Any]
-
+        let value = ["text": comment, "creationDate": Date().timeIntervalSince1970, "uid": currentUserUID] as [String : Any]
+        
         let ref = Database.database().reference().child("comments").child(postId).childByAutoId()
         ref.updateChildValues(value) { (error, ref) in
             if let error = error {
                 print("Failed to post Comments...", error)
                 return
             }
-        
+            
             print("Successfully to post Comments...")
-        }
-    }
-    
-    override var inputAccessoryView: UIView? {
-        get {
-            return containerView
+            self.containerView.clearCommentTextView()
         }
     }
     
